@@ -174,15 +174,14 @@
             <div class="flex justify-center gap-2 mb-6 flex-wrap">
                 <button class="tab-btn tab-active px-5 py-2 rounded-full font-medium transition-all" data-tab="today">📅 今日</button>
                 <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="goals">🎯 目标</button>
-                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="inbox">📥 收集箱</button>
-                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="me">📊 我的</button>
+                                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="me">📊 我的</button>
             </div>
 
             <!-- 全局总览 -->
             <div id="today-page" class="tab-page">
                 <div class="bg-white rounded-3xl cat-shadow p-8 border-2 border-catPurple/30 min-h-[600px]">
                     <h2 class="text-2xl font-bold text-center text-purple-500 mb-8">🗺️ 全局进度总览</h2>
-                    <div id="inbox-page" class="tab-page hidden"><div class="bg-white rounded-3xl cat-shadow p-6 border-2 border-catPink/30 mb-6"><div class="flex items-center justify-between mb-4"><h2 class="text-xl font-bold text-pink-500">📥 灵感收集箱</h2><span class="text-xs text-gray-400">随手记，之后再排计划</span></div><div class="flex gap-2 mb-4"><input type="text" id="inboxInput" placeholder="写下你的灵感或想法…" class="flex-1 px-4 py-3 rounded-2xl border-2 border-pink-200 focus:outline-none focus:border-catPink bg-pink-50/50"><button onclick="addInboxNote()" class="px-5 py-3 bg-gradient-to-r from-catPink to-catPurple text-white rounded-2xl hover:opacity-90 font-medium">添加</button></div><div id="inbox-notes" class="space-y-3"></div></div></div>
+                    </div>
 <div id="me-page" class="tab-page hidden">
                 <div class="bg-white rounded-3xl cat-shadow p-6 border-2 border-catPink/30 mb-6">
                     <div class="flex items-center justify-between mb-4">
@@ -551,45 +550,6 @@
             } else { renderGoalTree(data.goals, goalsContainer); }
         }
 
-        function renderInboxPage() {
-            var container = document.getElementById('inbox-notes');
-            var notes = data.growth.notes.filter(function(n){return n.type==='inbox'}).sort(function(a,b){return b.date.localeCompare(a.date)});
-            if (!notes.length) {
-                container.innerHTML = '<p class="text-center text-gray-300 py-8">还没有灵感记录~</p>';
-                return;
-            }
-            container.innerHTML = notes.map(function(note){
-                return '<div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 border border-pink-200"><div class="flex items-start justify-between"><p class="text-gray-700 flex-1">'+note.content+'</p><button onclick="deleteInboxNote(''+note.id+'')" class="text-gray-300 hover:text-red-400 ml-2"><i class="fa fa-times"></i></button></div><div class="flex items-center justify-between mt-2"><span class="text-xs text-gray-400">'+note.date+'</span><button onclick="exportToCalendar(''+note.id+'')" class="text-xs text-blue-400 hover:text-blue-600">📅 导出日历</button></div></div>';
-            }).join('');
-        }
-
-        async function addInboxNote() {
-            var input = document.getElementById('inboxInput');
-            var content = input.value.trim();
-            if (!content) return;
-            data.growth.notes.push({id: Date.now().toString(), type:'inbox', date: new Date().toLocaleString('zh-CN'), content: content});
-            await saveToCloud();
-            input.value = '';
-            renderInboxPage();
-        }
-
-        async function deleteInboxNote(noteId) {
-            data.growth.notes = data.growth.notes.filter(function(n){return n.id !== noteId});
-            await saveToCloud();
-            renderInboxPage();
-        }
-
-        function exportToCalendar(noteId) {
-            var note = data.growth.notes.find(function(n){return n.id === noteId});
-            if (!note) return;
-            var ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:' + note.content.replace(/\n/g,' ').slice(0,60) + '\nDTSTART:' + new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z\nEND:VEVENT\nEND:VCALENDAR';
-            var blob = new Blob([ics], {type: 'text/calendar;charset=utf-8'});
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'reminder.ics';
-            a.click();
-        }
-
         function renderMePage() {
             renderGrowthPage();
         }
@@ -790,8 +750,7 @@
                 document.getElementById(`${btn.dataset.tab}-page`).classList.remove('hidden');
                 if (btn.dataset.tab === 'today') { renderTodayPage(); refreshWeather(); }
                 if (btn.dataset.tab === 'goals') renderGoalsPage();
-                if (btn.dataset.tab === 'inbox') renderInboxPage();
-                if (btn.dataset.tab === 'me') renderMePage();
+                                if (btn.dataset.tab === 'me') renderMePage();
             });
         });
 
