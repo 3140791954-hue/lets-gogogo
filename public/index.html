@@ -1061,13 +1061,14 @@
             const categoryId = document.getElementById('goalCategory').value;
             const parentId = document.getElementById('goalParent').value;
             const type = document.getElementById('goalType').value;
+            const level = document.getElementById('goalLevel').value;
             if (!name) return;
 
             const newGoal = {
                 id: Date.now().toString(),
                 name,
                 categoryId,
-                level: 'month',
+                level: level || 'month',
                 type,
                 parentId: parentId || null,
                 children: [],
@@ -1134,7 +1135,9 @@
             const content = input.value.trim();
             if (!content) return;
             const goal = findGoalById(goalId);
-            goal.tasks.push({id: Date.now().toString(), content, done: false, doneTime: null});
+            var newTask = {id: Date.now().toString(), content, done: false, doneTime: null, createTime: new Date().toLocaleDateString('zh-CN')};
+            goal.tasks.push(newTask);
+            data.dailyTasks.push({...newTask, linkGoalId: goalId, alarmTime: null, image: null, alarmTriggered: false});
             await saveToCloud();
             renderAll();
             input.value = '';
