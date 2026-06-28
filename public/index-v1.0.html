@@ -172,18 +172,97 @@
             </header>
 
             <div class="flex justify-center gap-2 mb-6 flex-wrap">
-                <button class="tab-btn tab-active px-5 py-2 rounded-full font-medium transition-all" data-tab="today">📅 今日</button>
-                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="goals">🎯 目标</button>
-                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="inbox">📥 收集箱</button>
-                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="me">📊 我的</button>
+                <button class="tab-btn tab-active px-5 py-2 rounded-full font-medium transition-all" data-tab="mindmap">🗺️ 全局总览</button>
+                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="tasks">📋 任务看板</button>
+                <button class="tab-btn px-5 py-2 rounded-full font-medium bg-white text-pink-500 transition-all" data-tab="growth">📈 成长记录</button>
             </div>
 
             <!-- 全局总览 -->
-            <div id="today-page" class="tab-page">
+            <div id="mindmap-page" class="tab-page">
                 <div class="bg-white rounded-3xl cat-shadow p-8 border-2 border-catPurple/30 min-h-[600px]">
                     <h2 class="text-2xl font-bold text-center text-purple-500 mb-8">🗺️ 全局进度总览</h2>
-                    <div id="inbox-page" class="tab-page hidden"><div class="bg-white rounded-3xl cat-shadow p-6 border-2 border-catPink/30 mb-6"><div class="flex items-center justify-between mb-4"><h2 class="text-xl font-bold text-pink-500">📥 灵感收集箱</h2><span class="text-xs text-gray-400">随手记，之后再排计划</span></div><div class="flex gap-2 mb-4"><input type="text" id="inboxInput" placeholder="写下你的灵感或想法…" class="flex-1 px-4 py-3 rounded-2xl border-2 border-pink-200 focus:outline-none focus:border-catPink bg-pink-50/50"><button onclick="addInboxNote()" class="px-5 py-3 bg-gradient-to-r from-catPink to-catPurple text-white rounded-2xl hover:opacity-90 font-medium">添加</button></div><div id="inbox-notes" class="space-y-3"></div></div></div>
-<div id="me-page" class="tab-page hidden">
+                    <div class="bg-gradient-to-r from-catPink to-catPurple text-white px-8 py-4 rounded-full text-xl font-bold mb-8 shadow-lg text-center mx-auto w-fit">
+                        🐱 我的所有目标与待办
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl mx-auto">
+                        <div class="text-center">
+                            <div class="bg-catGreen/20 text-green-600 px-6 py-3 rounded-full font-bold mb-4 inline-block">🎯 目标体系</div>
+                            <div id="mindmap-goals" class="space-y-3 text-left"></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-catYellow/20 text-amber-600 px-6 py-3 rounded-full font-bold mb-4 inline-block">📅 每日待办</div>
+                            <div id="mindmap-daily" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 任务看板 -->
+            <div id="tasks-page" class="tab-page hidden">
+                <div class="flex gap-2 mb-6 flex-wrap justify-center items-center">
+                    <div id="category-filters" class="flex gap-2 flex-wrap"></div>
+                    <button onclick="showAddCategoryModal()" class="px-3 py-2 rounded-full bg-white text-pink-500 border border-pink-200 text-sm hover:bg-pink-50">
+                        <i class="fa fa-plus"></i> 新建分类
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-3xl cat-shadow p-6 mb-8 border-2 border-catPink/30">
+                    <div class="flex gap-3 mb-4">
+                        <button class="add-type-btn tab-active px-4 py-2 rounded-full text-sm" data-type="goal">🎯 新建目标</button>
+                        <button class="add-type-btn px-4 py-2 rounded-full text-sm bg-white text-pink-500" data-type="task">📅 添加每日任务</button>
+                    </div>
+
+                    <form id="addGoalForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <input type="text" id="goalName" placeholder="输入目标名称..." class="flex-1 px-4 py-3 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-catGreen bg-green-50/50">
+                            <select id="goalCategory" class="px-4 py-3 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-catGreen bg-green-50/50"></select>
+                            <select id="goalParent" class="px-4 py-3 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-catGreen bg-green-50/50">
+                                <option value=""></option>
+                            </select>
+                            <select id="goalType" class="px-4 py-3 rounded-2xl border-2 border-green-200 focus:outline-none focus:border-catGreen bg-green-50/50">
+                                <option value="normal">✅ 可完成目标</option>
+                                <option value="ongoing">🔄 持续型目标</option>
+                            </select>
+                            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-catGreen to-green-500 text-white rounded-2xl hover:opacity-90 font-medium">创建目标</button>
+                        </div>
+                    </form>
+
+                    <form id="addTaskForm" class="space-y-4 hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                            <input type="text" id="taskContent" placeholder="写下待办..." class="flex-1 px-4 py-3 rounded-2xl border-2 border-amber-200 focus:outline-none focus:border-catYellow bg-amber-50/50" required>
+                            <input type="text" id="taskImage" placeholder="图片（可选）" class="px-4 py-3 rounded-2xl border-2 border-amber-200 focus:outline-none focus:border-catYellow bg-amber-50/50">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <select id="taskParentGoal" class="px-4 py-3 rounded-2xl border-2 border-amber-200 focus:outline-none focus:border-catYellow bg-amber-50/50" onchange="updateSubGoalSelect()">
+                                <option value="">不关联目标（独立任务）</option>
+                            </select>
+                            <select id="taskSubGoal" class="px-4 py-3 rounded-2xl border-2 border-amber-200 focus:outline-none focus:border-catYellow bg-amber-50/50 hidden">
+                                <option value=""></option>
+                            </select>
+                            <input type="datetime-local" id="taskAlarm" class="px-4 py-3 rounded-2xl border-2 border-amber-200 focus:outline-none focus:border-catYellow bg-amber-50/50">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-gradient-to-r from-catYellow to-amber-500 text-white rounded-2xl hover:opacity-90 font-medium">添加任务</button>
+                    </form>
+                </div>
+
+                <div class="mb-10">
+                    <h2 class="text-xl font-bold text-green-600 mb-4 flex items-center gap-2"><span>🎯</span> 我的目标体系</h2>
+                    <div id="goals-container" class="space-y-4"></div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-bold text-amber-600 mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><span>📅</span> 每日待办</span>
+                        <span class="text-sm font-normal text-gray-400" id="daily-tasks-date"></span>
+                    </h2>
+                    <div class="bg-white rounded-3xl cat-shadow p-6 border-2 border-catYellow/30">
+                        <div id="daily-tasks" class="space-y-3 min-h-[100px]"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成长记录 -->
+            <div id="growth-page" class="tab-page hidden">
                 <div class="bg-white rounded-3xl cat-shadow p-6 border-2 border-catPink/30 mb-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-pink-500">💖 今日心情打卡</h3>
@@ -440,8 +519,7 @@
             document.getElementById('login-page').classList.add('hidden');
             document.getElementById('app-page').classList.remove('hidden');
             document.getElementById('current-username').textContent = currentUser.username;
-            renderGoalsPage();
-            renderTodayPage();
+            renderAll();
             startAutoSave();
             clearInterval(alarmCheckInterval);
             alarmCheckInterval = setInterval(checkAlarms, 30000);
@@ -523,75 +601,6 @@
         function startAutoSave() {
             clearInterval(autoSaveTimer);
             autoSaveTimer = setInterval(saveToCloud, 10000); // 每10秒自动同步
-        }
-
-
-        async function refreshWeather() {
-            const w = document.getElementById('weather-widget');
-            try {
-                const r = await fetch('https://wttr.in/Shanghai?format=%C+%t+%h+%w&lang=zh', {signal: AbortSignal.timeout(5000)});
-                w.innerHTML = await r.text();
-            } catch(e) {
-                w.innerHTML = '⛅ 温度暂无';
-            }
-        }
-
-        function renderTodayPage() {
-            document.getElementById('today-page-date').textContent = getTodayBeijing();
-            renderMoodSelector();
-            // daily tasks rendered via renderAll
-        }
-
-        function renderGoalsPage() {
-            // goal tree only - no daily tasks
-            const goalsContainer = document.getElementById('goals-container');
-            goalsContainer.innerHTML = '';
-            if (data.goals.length === 0) {
-                goalsContainer.innerHTML = '<div class="text-center py-12 text-gray-300"><div class="text-4xl mb-2">🎯</div><p>还没有创建目标，立下你的第一个目标吧~</p></div>';
-            } else { renderGoalTree(data.goals, goalsContainer); }
-        }
-
-        function renderInboxPage() {
-            var container = document.getElementById('inbox-notes');
-            var notes = data.growth.notes.filter(function(n){return n.type==='inbox'}).sort(function(a,b){return b.date.localeCompare(a.date)});
-            if (!notes.length) {
-                container.innerHTML = '<p class="text-center text-gray-300 py-8">还没有灵感记录~</p>';
-                return;
-            }
-            container.innerHTML = notes.map(function(note){
-                return '<div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-2xl p-4 border border-pink-200"><div class="flex items-start justify-between"><p class="text-gray-700 flex-1">'+note.content+'</p><button onclick="deleteInboxNote(''+note.id+'')" class="text-gray-300 hover:text-red-400 ml-2"><i class="fa fa-times"></i></button></div><div class="flex items-center justify-between mt-2"><span class="text-xs text-gray-400">'+note.date+'</span><button onclick="exportToCalendar(''+note.id+'')" class="text-xs text-blue-400 hover:text-blue-600">📅 导出日历</button></div></div>';
-            }).join('');
-        }
-
-        async function addInboxNote() {
-            var input = document.getElementById('inboxInput');
-            var content = input.value.trim();
-            if (!content) return;
-            data.growth.notes.push({id: Date.now().toString(), type:'inbox', date: new Date().toLocaleString('zh-CN'), content: content});
-            await saveToCloud();
-            input.value = '';
-            renderInboxPage();
-        }
-
-        async function deleteInboxNote(noteId) {
-            data.growth.notes = data.growth.notes.filter(function(n){return n.id !== noteId});
-            await saveToCloud();
-            renderInboxPage();
-        }
-
-        function exportToCalendar(noteId) {
-            var note = data.growth.notes.find(function(n){return n.id === noteId});
-            if (!note) return;
-            var ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:' + note.content.replace(/\n/g,' ').slice(0,60) + '\nDTSTART:' + new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z\nEND:VEVENT\nEND:VCALENDAR';
-            var blob = new Blob([ics], {type: 'text/calendar;charset=utf-8'});
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'reminder.ics';
-            a.click();
-        }
-
-        function renderMePage() {
-            renderGrowthPage();
         }
 
         // ========== 检查登录状态 ==========
@@ -788,10 +797,8 @@
                 btn.classList.remove('bg-white', 'text-pink-500');
                 document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden'));
                 document.getElementById(`${btn.dataset.tab}-page`).classList.remove('hidden');
-                if (btn.dataset.tab === 'today') { renderTodayPage(); refreshWeather(); }
-                if (btn.dataset.tab === 'goals') renderGoalsPage();
-                if (btn.dataset.tab === 'inbox') renderInboxPage();
-                if (btn.dataset.tab === 'me') renderMePage();
+                if (btn.dataset.tab === 'growth') renderGrowthPage();
+                if (btn.dataset.tab === 'mindmap') renderMindMap();
             });
         });
 
@@ -1041,7 +1048,8 @@
             }).join('') : `<p class="text-center text-gray-300 py-8">今日暂无待办~</p>`;
 
             updateGoalSelects();
-                        renderMoodSelector();
+            renderMindMap();
+            renderMoodSelector();
         }
 
         function findGoalById(goalId, goals = data.goals) {
