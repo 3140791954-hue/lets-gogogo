@@ -1029,8 +1029,8 @@
             const dailyContainer = document.getElementById('daily-tasks');
             const todayStr = getTodayBeijing();
         const activeTasks = data.dailyTasks.filter(task => !task.done);
-        const todayTasksArr = activeTasks.filter(task => task.createTime === todayStr);
-        const pastTasksArr = activeTasks.filter(task => task.createTime !== todayStr && task.createTime);
+        const todayTasksArr = activeTasks.filter(task => !task.createTime || task.createTime === todayStr);
+        const pastTasksArr = activeTasks.filter(task => task.createTime && task.createTime !== todayStr);
         dailyContainer.innerHTML = (todayTasksArr.length + pastTasksArr.length) ? [...todayTasksArr, ...pastTasksArr].map(task => {
                 const linkGoal = task.linkGoalId ? findGoalById(task.linkGoalId) : null;
                 return `
@@ -1091,7 +1091,7 @@
                 parentId: parentId || null,
                 children: [],
                 tasks: [],
-                createTime: new Date().toLocaleDateString('zh-CN'),
+                createTime: new Date().toISOString().split('T')[0],
                 completed: false,
                 completeTime: null,
                 manualProgress: null
@@ -1122,7 +1122,7 @@
                 parentId,
                 children: [],
                 tasks: [],
-                createTime: new Date().toLocaleDateString('zh-CN'),
+                createTime: new Date().toISOString().split('T')[0],
                 completed: false,
                 completeTime: null,
                 manualProgress: null
@@ -1153,7 +1153,7 @@
             const content = input.value.trim();
             if (!content) return;
             const goal = findGoalById(goalId);
-            var newTask = {id: Date.now().toString(), content, done: false, doneTime: null, createTime: new Date().toLocaleDateString('zh-CN')};
+            var newTask = {id: Date.now().toString(), content, done: false, doneTime: null, createTime: new Date().toISOString().split('T')[0]};
             goal.tasks.push(newTask);
             data.dailyTasks.push({...newTask, linkGoalId: goalId, alarmTime: null, image: null, alarmTriggered: false,
                 createTime: createDate});
@@ -1189,7 +1189,7 @@
                 Notification.requestPermission().catch(() => {});
             }
 
-            const createDate = new Date().toLocaleDateString('zh-CN');
+            const createDate = new Date().toISOString().split('T')[0];
             const linkGoalId = subGoalId || parentGoalId || null;
             const newTask = {
                 id: Date.now().toString(),
